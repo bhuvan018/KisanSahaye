@@ -2,6 +2,13 @@ import requests
 from config import OPENWEATHER_API_KEY
 from datetime import datetime
 
+# Import AI function for crop-specific recommendations
+try:
+    from utils.gemini_service import get_crop_specific_weather_recommendations
+except ImportError:
+    # Fallback for relative import
+    from gemini_service import get_crop_specific_weather_recommendations
+
 def get_weather_data(city_name, state=""):
     """Get weather data from OpenWeather API"""
     try:
@@ -33,6 +40,19 @@ def get_weather_recommendations(crop_name, weather_data):
     if not weather_data:
         return "Weather data not available"
     
+    # If crop is specified, use AI for crop-specific recommendations
+    if crop_name:
+        try:
+            return get_crop_specific_weather_recommendations(crop_name, weather_data)
+        except Exception as e:
+            # Fallback to basic recommendations if AI fails
+            return f"Error getting AI recommendations: {str(e)}\n\n{get_generic_weather_recommendations(weather_data)}"
+    
+    # Generic recommendations if no crop specified
+    return get_generic_weather_recommendations(weather_data)
+
+def get_generic_weather_recommendations(weather_data):
+    """Generate generic weather-based recommendations"""
     temp = weather_data.get("main", {}).get("temp", 0)
     humidity = weather_data.get("main", {}).get("humidity", 0)
     rainfall = weather_data.get("rain", {}).get("1h", 0) if weather_data.get("rain") else 0
@@ -59,9 +79,7 @@ def get_weather_recommendations(crop_name, weather_data):
     if rainfall > 5:
         recommendations.append("🌧️ Recent rainfall. Ensure proper drainage to prevent waterlogging.")
     
-    # Crop-specific recommendations
-    crop_recs = get_crop_specific_recommendations(crop_name, temp, humidity, rainfall)
-    recommendations.extend(crop_recs)
+    recommendations.append("\n💡 Tip: Select a specific crop to get personalized recommendations!")
     
     return "\n".join(recommendations)
 

@@ -112,6 +112,54 @@ def get_crop_recommendations(region, soil_type, preferences=""):
     except Exception as e:
         return f"Error getting recommendations: {str(e)}"
 
+def get_crop_specific_weather_recommendations(crop_name, weather_data):
+    """Get AI-powered crop-specific weather recommendations"""
+    try:
+        if not GEMINI_API_KEY:
+            return "Please set your GEMINI_API_KEY in the .env file"
+        
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        
+        # Extract weather parameters
+        temp = weather_data.get("main", {}).get("temp", 0)
+        humidity = weather_data.get("main", {}).get("humidity", 0)
+        pressure = weather_data.get("main", {}).get("pressure", 0)
+        temp_min = weather_data.get("main", {}).get("temp_min", 0)
+        temp_max = weather_data.get("main", {}).get("temp_max", 0)
+        rainfall = weather_data.get("rain", {}).get("1h", 0) if weather_data.get("rain") else 0
+        wind_speed = weather_data.get("wind", {}).get("speed", 0)
+        weather_desc = weather_data.get("weather", [{}])[0].get("description", "")
+        
+        prompt = f"""
+        As an agricultural expert for Indian farmers, provide specific weather-based recommendations for {crop_name} crop.
+        
+        Current Weather Conditions:
+        - Temperature: {temp}°C (Range: {temp_min}°C to {temp_max}°C)
+        - Humidity: {humidity}%
+        - Atmospheric Pressure: {pressure} hPa
+        - Weather Description: {weather_desc}
+        - Wind Speed: {wind_speed} m/s
+        - Recent Rainfall: {rainfall} mm (if applicable)
+        
+        Provide SPECIFIC recommendations for {crop_name}:
+        1. Is current temperature suitable for this crop? If not, what actions to take?
+        2. How does current humidity affect this crop? Any disease risks?
+        3. Irrigation recommendations based on weather conditions
+        4. Any protective measures needed (frost protection, shade, windbreaks, etc.)
+        5. Optimal timing for planting/harvesting based on current weather
+        6. Disease prevention tips specific to this weather and crop combination
+        7. Any immediate actions farmer should take TODAY
+        
+        Be specific to {crop_name} crop. Don't give generic advice.
+        Respond in simple Hindi/English mixed language suitable for small-scale Indian farmers.
+        Format as clear, actionable bullet points.
+        """
+        
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error generating recommendations: {str(e)}"
+
 def chat_with_ai(question):
     """Conversational AI for farmer queries"""
     try:

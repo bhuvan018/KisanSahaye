@@ -290,7 +290,7 @@ elif page == "🔍 Disease Detection":
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+        st.image(image, caption="Uploaded Image", width=500)
         
         if st.button("🔍 Analyze Disease"):
             with st.spinner("Analyzing image with AI..."):
@@ -355,7 +355,7 @@ elif page == "🌱 Soil Analysis":
         
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
-            st.image(image, caption="Soil Image", use_container_width=True)
+            st.image(image, caption="Soil Image", width=500)
             
             if st.button("Analyze Soil"):
                 with st.spinner("Analyzing soil quality..."):
