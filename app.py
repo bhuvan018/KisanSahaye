@@ -12,10 +12,9 @@ from utils.weather_service import (
     get_weather_recommendations,
     format_weather_info
 )
-from utils.market_service import get_market_insights, get_all_crop_prices
 from config import ALL_CROPS, INDIAN_STATES
 
-# Page configuration
+
 st.set_page_config(
     page_title="Krishi Mitra - AI Agriculture Assistant",
     page_icon="🌾",
@@ -23,7 +22,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+
 st.markdown("""
     <style>
     .main-header {
@@ -175,17 +174,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title
+
 st.markdown('<h1 class="main-header">🌾 Krishi Mitra - AI Agriculture Assistant</h1>', unsafe_allow_html=True)
 st.markdown("### Empowering Indian Farmers with AI-Powered Agricultural Solutions")
 
-# Initialize session state
+
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "selected_page" not in st.session_state:
     st.session_state.selected_page = "🏠 Home"
 
-# Sidebar navigation
+
 st.sidebar.title("🌾 Navigation")
 page_options = ["🏠 Home", "🔍 Disease Detection", "🌦️ Weather Recommendations", "🌱 Soil Analysis", 
                 "🔄 Crop Diversification", "💬 Ask Expert"]
@@ -201,11 +200,11 @@ page = st.sidebar.radio(
     index=default_index
 )
 
-# Update session state if page changed from sidebar
+
 if page != st.session_state.selected_page:
     st.session_state.selected_page = page
 
-# Home Page
+
 if page == "🏠 Home":
     st.header("Welcome to Krishi Mitra!")
     st.markdown("""
@@ -215,7 +214,7 @@ if page == "🏠 Home":
     st.markdown("### Available Features:")
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Define features with icons, titles, and descriptions
+    
     features = [
         {
             "icon": "🔍",
@@ -249,15 +248,14 @@ if page == "🏠 Home":
         }
     ]
     
-    # Create grid layout: 3 columns, 2 rows
+   
     cols = st.columns(3)
     
     for idx, feature in enumerate(features):
         col_idx = idx % 3
         
         with cols[col_idx]:
-            # Create button styled as a feature card
-            # Format: Icon (large), Title, Description
+           
             button_text = f"{feature['icon']}\n\n{feature['title']}\n\n{feature['description']}"
             if st.button(
                 button_text,
@@ -275,7 +273,7 @@ if page == "🏠 Home":
     st.markdown("<br>", unsafe_allow_html=True)
     st.info("💡 Click on any feature card above or use the sidebar to get started! 🚀")
 
-# Disease Detection Page
+
 elif page == "🔍 Disease Detection":
     st.header("🔍 Crop Disease & Pest Detection")
     st.markdown("Upload an image of your crop to identify diseases, pests, and get treatment recommendations.")
@@ -299,7 +297,7 @@ elif page == "🔍 Disease Detection":
                 st.markdown("### Analysis Results:")
                 st.info(result)
 
-# Weather Recommendations Page
+
 elif page == "🌦️ Weather Recommendations":
     st.header("🌦️ Weather-Based Recommendations")
     st.markdown("Get weather-specific planting and care recommendations for your crops.")
@@ -317,7 +315,7 @@ elif page == "🌦️ Weather Recommendations":
         if not city:
             st.error("Please enter a city name")
         else:
-            with st.spinner("Fetching weather data..."):
+            with st.spinner("Fetching weather data and anlyzing..."):
                 weather_data, error = get_weather_data(city, state)
                 
                 if error:
@@ -339,7 +337,7 @@ elif page == "🌦️ Weather Recommendations":
                         else:
                             st.info("Select a crop to get specific recommendations")
 
-# Soil Analysis Page
+
 elif page == "🌱 Soil Analysis":
     st.header("🌱 Soil Quality Analysis")
     st.markdown("Analyze soil quality from image or text description.")
@@ -382,7 +380,7 @@ elif page == "🌱 Soil Analysis":
                 st.error("Please enter a soil description")
 
 
-# Crop Diversification Page
+
 elif page == "🔄 Crop Diversification":
     st.header("🔄 Crop Diversification Recommendations")
     st.markdown("Get AI-powered suggestions for diversifying your crops based on your region and soil.")
@@ -411,12 +409,12 @@ elif page == "🔄 Crop Diversification":
                 st.markdown("### Diversification Recommendations:")
                 st.info(recommendations)
 
-# Ask Expert Page
+
 elif page == "💬 Ask Expert":
     st.header("💬 Ask Agricultural Expert")
     st.markdown("Chat with our AI expert for any agricultural questions.")
     
-    # Display chat history
+    
     for i, (role, message) in enumerate(st.session_state.chat_history):
         if role == "user":
             st.markdown(f"**You:** {message}")
@@ -424,7 +422,7 @@ elif page == "💬 Ask Expert":
             st.markdown(f"**Krishi Mitra:** {message}")
         st.markdown("---")
     
-    # User input
+    
     question = st.text_input("Ask your question:", placeholder="e.g., How to prevent aphids on tomato plants?")
     
     col1, col2 = st.columns([1, 5])

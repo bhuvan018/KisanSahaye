@@ -3,7 +3,7 @@ from config import GEMINI_API_KEY
 from PIL import Image
 import io
 
-# Configure Gemini
+
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
@@ -11,11 +11,11 @@ def analyze_crop_disease(image, crop_name=""):
     """Analyze crop disease from image using Gemini Vision"""
     try:
         if not GEMINI_API_KEY:
-            return "Please set your GEMINI_API_KEY in the .env file"
+            return "GEMINI_API_KEY missing"
         
         model = genai.GenerativeModel('gemini-2.5-flash')
         
-        # Convert image to PIL if needed
+        
         if isinstance(image, bytes):
             image = Image.open(io.BytesIO(image))
         elif not isinstance(image, Image.Image):
@@ -43,7 +43,7 @@ def analyze_soil_quality(image=None, description=""):
     """Analyze soil quality from image or description"""
     try:
         if not GEMINI_API_KEY:
-            return "Please set your GEMINI_API_KEY in the .env file"
+            return "GEMINI_API_KEY missing"
         
         model = genai.GenerativeModel('gemini-2.5-flash')
         
@@ -61,6 +61,8 @@ def analyze_soil_quality(image=None, description=""):
             3. Visible organic matter content
             4. Drainage assessment
             5. Recommendations for improvement
+
+            Respond in simple Hindi/English mixed language for Indian farmers.
             """
             response = vision_model.generate_content([prompt, image])
             return response.text
@@ -74,7 +76,7 @@ def analyze_soil_quality(image=None, description=""):
             4. Suitable crops for this soil type
             5. Nutrient management recommendations
             
-            Respond in simple language for Indian farmers.
+            Respond in simple Hindi/English mixed language for Indian farmers.
             """
             response = model.generate_content(prompt)
             return response.text
@@ -120,7 +122,7 @@ def get_crop_specific_weather_recommendations(crop_name, weather_data):
         
         model = genai.GenerativeModel('gemini-2.5-flash')
         
-        # Extract weather parameters
+        
         temp = weather_data.get("main", {}).get("temp", 0)
         humidity = weather_data.get("main", {}).get("humidity", 0)
         pressure = weather_data.get("main", {}).get("pressure", 0)
